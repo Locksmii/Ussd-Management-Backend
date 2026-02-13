@@ -15,6 +15,8 @@ C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_p
 C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\AuthServiceApplication.java
 C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\Service\AuthService.java
 C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\Config\OracleConfig.java
+C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\Repository\postgresql\PostgreSQLUserRepository.java
 C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\security\MyUserDetailsService.java
 C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\Entity\User.java
 C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\Controller\UserController.java
+C:\Users\Tadiwa\Downloads\login_page\login_page\src\main\java\springboot_login_page\login_page\Config\PostgreSQLConfig.java

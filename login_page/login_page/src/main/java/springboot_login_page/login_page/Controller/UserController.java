@@ -17,7 +17,7 @@ public class UserController {
     private final MySQLUserRepository mySQLUserRepository;
     private final JwtService jwtService;
 
-    //Get current users profiles
+    // Get current user's profile
 
     @GetMapping("/profile")
     public ResponseEntity<User> getProfile(){
@@ -30,7 +30,7 @@ public class UserController {
         return  ResponseEntity.ok(user);
     }
 
-    //Update current user's profile excluding the role
+    // Update current user's profile excluding the role
     @PutMapping("/profile")
     public ResponseEntity<User> updateMyProfile(@RequestBody User updateUser){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -39,7 +39,7 @@ public class UserController {
         User user = mySQLUserRepository.findByUsername(username)
                 .orElseThrow(() ->new RuntimeException("User not found"));
 
-        //Users can only update certain fields
+        // Users can only update certain fields
         user.setUsername(updateUser.getUsername());
 
         mySQLUserRepository.save(user);

@@ -1,3 +1,4 @@
+// AuthService.java (更新版)
 package springboot_login_page.login_page.Service;
 
 import org.springframework.security.core.Authentication;
@@ -10,6 +11,7 @@ import springboot_login_page.login_page.DTO.AdminRegisterRequest;
 import springboot_login_page.login_page.Entity.User;
 import springboot_login_page.login_page.Repository.mysql.MySQLUserRepository;
 import springboot_login_page.login_page.Repository.oracle.OracleUserRepository;
+import springboot_login_page.login_page.Repository.postgresql.PostgreSQLUserRepository;
 
 import java.util.List;
 
@@ -18,15 +20,18 @@ public class AuthService {
 
     private final MySQLUserRepository mysqlRepo;
     private final OracleUserRepository oracleRepo;
+    private final PostgreSQLUserRepository postgresqlRepo;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
 
     public AuthService(MySQLUserRepository mysqlRepo,
                        OracleUserRepository oracleRepo,
+                       PostgreSQLUserRepository postgresqlRepo,
                        PasswordEncoder encoder,
                        JwtService jwtService) {
         this.mysqlRepo = mysqlRepo;
         this.oracleRepo = oracleRepo;
+        this.postgresqlRepo = postgresqlRepo;
         this.encoder = encoder;
         this.jwtService = jwtService;
     }
@@ -56,6 +61,13 @@ public class AuthService {
         oracleUser.setPassword(encoder.encode(password));
         oracleUser.setRole(User.Role.USER);
         oracleRepo.save(oracleUser);
+
+        // Create user for PostgreSQL
+        User postgresqlUser = new User();
+        postgresqlUser.setUsername(username);
+        postgresqlUser.setPassword(encoder.encode(password));
+        postgresqlUser.setRole(User.Role.USER);
+        postgresqlRepo.save(postgresqlUser);
     }
 
     @Transactional
@@ -93,13 +105,21 @@ public class AuthService {
         oracleUser.setPassword(encoder.encode(request.getPassword()));
         oracleUser.setRole(request.getRole());
         oracleRepo.save(oracleUser);
+
+        // Create user for PostgreSQL
+        User postgresqlUser = new User();
+        postgresqlUser.setUsername(request.getUsername());
+        postgresqlUser.setPassword(encoder.encode(request.getPassword()));
+        postgresqlUser.setRole(request.getRole());
+        postgresqlRepo.save(postgresqlUser);
     }
 
     public String login(String username, String password) {
-        // Try MySQL first, fall back to Oracle if needed
+        // Try MySQL first, fall back to Oracle or PostgreSQL if needed
         User user = mysqlRepo.findByUsername(username)
                 .orElseGet(() -> oracleRepo.findByUsername(username)
-                        .orElseThrow(() -> new RuntimeException("User not found")));
+                        .orElseGet(() -> postgresqlRepo.findByUsername(username)
+                                .orElseThrow(() -> new RuntimeException("User not found"))));
 
         if (!encoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
@@ -119,7 +139,7 @@ public class AuthService {
             throw new RuntimeException("Only admins can view all users");
         }
 
-        // Return users from MySQL (or combine both if needed)
+        // Return users from MySQL (or combine all if needed)
         return mysqlRepo.findAll();
     }
 
@@ -147,6 +167,13 @@ public class AuthService {
                     oracleUser.setRole(newRole);
                     oracleRepo.save(oracleUser);
                 });
+
+        // Update in PostgreSQL
+        postgresqlRepo.findByUsername(mysqlUser.getUsername())
+                .ifPresent(postgresqlUser -> {
+                    postgresqlUser.setRole(newRole);
+                    postgresqlRepo.save(postgresqlUser);
+                });
     }
 
     @Transactional
@@ -169,5 +196,9 @@ public class AuthService {
         // Delete from Oracle
         oracleRepo.findByUsername(mysqlUser.getUsername())
                 .ifPresent(oracleRepo::delete);
+
+        // Delete from PostgreSQL
+        postgresqlRepo.findByUsername(mysqlUser.getUsername())
+                .ifPresent(postgresqlRepo::delete);
     }
 }

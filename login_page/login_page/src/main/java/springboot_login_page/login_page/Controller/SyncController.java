@@ -1,3 +1,4 @@
+// SyncController.java (更新版)
 package springboot_login_page.login_page.Controller;
 
 import lombok.RequiredArgsConstructor;
@@ -16,19 +17,31 @@ public class SyncController {
 
     @PostMapping("/to-oracle")
     public ResponseEntity<String> syncToOracle() {
-        syncService.syncUsersToOracle();
+        syncService.syncToOracle();
         return ResponseEntity.ok("Users synchronized to Oracle");
     }
 
     @PostMapping("/to-mysql")
     public ResponseEntity<String> syncToMySQL() {
-        syncService.syncUsersToMySQL();
+        syncService.syncToMySQL();
         return ResponseEntity.ok("Users synchronized to MySQL");
     }
 
-    @PostMapping("/both")
-    public ResponseEntity<String> syncBoth() {
-        syncService.syncBothDatabases();
-        return ResponseEntity.ok("Databases synchronized bi-directionally");
+    @PostMapping("/to-postgresql")
+    public ResponseEntity<String> syncToPostgreSQL() {
+        syncService.syncToPostgreSQL();
+        return ResponseEntity.ok("Users synchronized to PostgreSQL");
+    }
+
+    @PostMapping("/all")
+    public ResponseEntity<String> syncAll() {
+        syncService.syncAllDatabases();
+        return ResponseEntity.ok("All databases synchronized");
+    }
+
+    @PostMapping("/from-postgresql")
+    public ResponseEntity<String> syncFromPostgreSQL() {
+        syncService.syncUsersFromPostgreSQLToOthers();
+        return ResponseEntity.ok("Users synchronized from PostgreSQL to MySQL and Oracle");
     }
 }

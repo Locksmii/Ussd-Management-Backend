@@ -32,19 +32,17 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
-                        //.anyRequest().permitAll()
-
-                        //pubic endpoints
+                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public").permitAll()
 
-                        //admin only endpoints
+                        // Admin only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        //User endpoints (accessible by both USER and ADMIN)
+                        // User endpoints (accessible by both USER and ADMIN)
                         .requestMatchers("/api/user/**").hasAnyRole("USER","ADMIN")
 
-                        //All other endpoints require authentication
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
